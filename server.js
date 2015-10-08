@@ -33,6 +33,28 @@ http.createServer(function (req, res) {
 	var method = req.method; //获取请求方法
 	var path = req.url; //获取原始请求路径
 
+	/* 测试代码，复制到控制台运行
+	
+	 * POST请求
+	   var xmlhttp;
+	   xmlhttp.open('POST','http://localhost:8080',true);
+	   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+	   xmlhttp.send('name=kevin&id=1');
+
+	 * GET请求
+	    var xmlhttp,
+		xmlhttp.open('GET','http://localhost:8080'+'?name=kevin&id=1');
+		xmlhttp.send();
+	*/
+
+	switch(method){
+		case 'GET'   : console.log('1'); break;
+		case 'POST'  : console.log('2'); break;
+		case 'PUT'   : console.log('3'); break;
+		case 'DELETE': console.log('4'); break;
+		default      :console.log('error');break;
+	}
+
 	//获取GET url传递的参数 通过来获取paramsGet.XXX
 	var paramsGet = url.parse(req.url).query; 
 		paramsGet = querystring.parse(paramsGet);
@@ -54,6 +76,6 @@ http.createServer(function (req, res) {
 	res.writeHead(200, {'Content-Type': 'text/plain'}); 
 	res.write('hello world!'); 
 	res.end();
-}).listen(8080, "127.0.0.1"); 
+}).listen(8080, '127.0.0.1'); 
 
 console.log('Server running at http://127.0.0.1:8080/');
