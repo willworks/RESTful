@@ -36,13 +36,13 @@ http.createServer(function (req, res) {
 	/* 测试代码，复制到控制台运行
 	
 	 * POST请求
-	   var xmlhttp;
+	   var xmlhttp = new XMLHttpRequest();
 	   xmlhttp.open('POST','http://localhost:8080',true);
 	   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 	   xmlhttp.send('name=kevin&id=1');
 
 	 * GET请求
-	    var xmlhttp,
+	    var xmlhttp = new XMLHttpRequest();
 		xmlhttp.open('GET','http://localhost:8080'+'?name=kevin&id=1');
 		xmlhttp.send();
 	*/
