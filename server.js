@@ -53,17 +53,55 @@ http.createServer(function (req, res) {
 	// 判断请求类型，分类处理
 	// http只有这4种请求，其他的钧不合法，故不用default加以处理
 	// 而且传输的时候，需要将JSON，也就是object转为string，用JSON.stringify()
-	switch(method){
-		case 'GET'   :  //获取GET url传递的参数 通过来获取paramsGet.XXX
-					    paramsGet = url.parse(req.url).query; 
-						paramsGet = querystring.parse(paramsGet);
-						console.log(paramsGet);
-					    res.writeHead(200, {'Content-Type': 'text/plain'}); 
-						res.write('GET'); 
-						res.write(JSON.stringify(paramsGet)); 
-						res.end();
-					    break;
 
+
+	switch(method){
+		/*start GET*/
+		/**
+		 * http://localhost:8080/listUsers
+		 * http://localhost:8080/listUsers?id=1
+		 */
+		case 'GET'   :  if(pathname == '/listUsers'){
+							// 获取GET url传递的参数 通过来获取paramsGet.XXX
+						    paramsGet = url.parse(req.url).query; 
+							paramsGet = querystring.parse(paramsGet);
+							if(paramsGet.id == undefined){
+								// 读取保存的全部用户
+								fs.readFile( __dirname + "/" + "data/users.json", 'utf8', function (err, data) {
+									res.writeHead(200, {'Content-Type': 'text/plain'});
+								    res.write(data);
+								    res.end();
+								    console.log(method + ' all users');
+								});
+							}else{
+								// 查询具体用户
+								var id = 'user' + paramsGet.id;
+								fs.readFile( __dirname + "/" + "data/users.json", 'utf8', function (err, data) {
+									var user = JSON.parse(data)[id];
+									user = JSON.stringify(user);
+									if(user == undefined){
+										res.writeHead(200, {'Content-Type': 'text/plain'});
+										res.write('user does not exist!');
+										res.end();
+										console.log('user does not exist!');
+									}else{
+										res.writeHead(200, {'Content-Type': 'text/plain'});
+										res.write(user);
+										res.end();
+										console.log(method + ' ' + user);
+									}
+								});
+							}
+						}
+					    break;
+		/*end GET*/
+
+
+		/*start POST*/
+	    /**
+	     * http://localhost:8080/listUsers
+	     * http://localhost:8080/listUsers?id=1
+	     */
 		case 'POST'  :  //获取POST传递的参数 通过addListener来实现
 				        req.addListener('data', function(chunk){  
 				            paramsPost += chunk;  
@@ -75,26 +113,28 @@ http.createServer(function (req, res) {
 			            	res.write('POST'); 
 			            	res.end();
 				        });
-					    break;
 
+					    break;
+		/*end POST*/
+
+		/*start PUT*/
 		case 'PUT'   :  console.log('PUT is not ready yet!'); 
 						res.writeHead(200, {'Content-Type': 'text/plain'}); 
 						res.write('PUT is not ready yet!'); 
 						res.end();
 					    break;
+		/*end PUT*/
 
+
+		/*start DELETE*/
 		case 'DELETE':  console.log('DELETE is not ready yet!'); 
 						res.writeHead(200, {'Content-Type': 'text/plain'}); 
 						res.write('DELETE is not ready yet!'); 
 						res.end();
 					    break;
+		/*end DELETE*/
 	}
-
-	// console.log(method);
-	// console.log(path);
-	// console.log(pathname);
-
-
+	
 }).listen(8080, '127.0.0.1'); 
 
 console.log('Server running at http://127.0.0.1:8080/');
