@@ -50,3 +50,49 @@ A RESTful web system build with node
 		}).listen(8080, '127.0.0.1'); 
 
 		console.log('Server running at http://127.0.0.1:8080/');
+
+### RESTful API列表
+
+<table style="margin:0 auto"> 
+	<tbody>
+		<tr>
+			<th>序号</th>
+			<th>URI</th>
+			<th>HTTP 方法</th>
+			<th>发送内容</th>
+			<th>结果</th> 
+		</tr>
+
+		<tr>
+			<td>1</td>
+			<td>listUsers</td>
+			<td>GET</td>
+			<td>空</td>
+			<td>显示所有用户列表</td> 
+		</tr>
+
+		<tr>
+			<td>2</td>
+			<td>addUser</td>
+			<td>POST</td>
+			<td>JSON 字符串</td>
+			<td>添加新用户</td> 
+		</tr>
+
+		<tr>
+			<td>3</td>
+			<td>deleteUser</td>
+			<td>DELETE</td>
+			<td>JSON 字符串</td>
+			<td>删除用户</td> 
+		</tr>
+
+		<tr>
+			<td>4</td>
+			<td>listUsers?id=</td>
+			<td>GET</td>
+			<td>空</td>
+			<td>显示用户详细信息</td> 
+		</tr>
+	</tbody>
+</table>
