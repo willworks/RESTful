@@ -34,7 +34,7 @@ http.createServer(function (req, res) {
 	var path = req.url; //获取原始请求路径
 	var pathname = url.parse(path).pathname; // 获取不带参数的路径
 
-	/* 测试代码，复制到控制台运行
+	/* 测试代码
 	
 	 * POST请求
 	   var xmlhttp = new XMLHttpRequest();
@@ -53,7 +53,11 @@ http.createServer(function (req, res) {
 		case 'POST'  : console.log('2'); break;
 		case 'PUT'   : console.log('3'); break;
 		case 'DELETE': console.log('4'); break;
-		default      :console.log('error');break;
+
+		default      : 	res.writeHead(200, {'Content-Type': 'text/plain'}); 
+						res.write('hello world!'); 
+						res.end();
+						break;
 	}
 
 	//获取GET url传递的参数 通过来获取paramsGet.XXX
@@ -75,9 +79,7 @@ http.createServer(function (req, res) {
 	console.log(pathname);
 	console.log(paramsGet);
 
-	res.writeHead(200, {'Content-Type': 'text/plain'}); 
-	res.write('hello world!'); 
-	res.end();
+
 }).listen(8080, '127.0.0.1'); 
 
 console.log('Server running at http://127.0.0.1:8080/');
