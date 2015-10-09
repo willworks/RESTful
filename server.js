@@ -102,17 +102,30 @@ http.createServer(function (req, res) {
 	     * http://localhost:8080/listUsers
 	     * http://localhost:8080/listUsers?id=1
 	     */
-		case 'POST'  :  //获取POST传递的参数 通过addListener来实现
-				        req.addListener('data', function(chunk){  
-				            paramsPost += chunk;  
-				        })  
-				        .addListener('end', function(){  
-				            paramsPost = querystring.parse(paramsPost);
-				            console.log(paramsPost);
-			                res.writeHead(200, {'Content-Type': 'text/plain'}); 
-			            	res.write('POST'); 
-			            	res.end();
-				        });
+		case 'POST'  :  if(pathname == '/addUser'){
+							//获取POST传递的参数 通过addListener来实现
+					        req.addListener('data', function(chunk){  
+					            paramsPost += chunk;  
+					        })  
+					        .addListener('end', function(){  
+					            paramsPost = querystring.parse(paramsPost);
+
+
+					            
+
+					            console.log(paramsPost);
+				                res.writeHead(200, {'Content-Type': 'text/plain'}); 
+				            	res.write('POST'); 
+				            	res.end();
+					        });
+						}else{
+							res.writeHead(200, {'Content-Type': 'text/plain'});
+							res.write('Request URL is not in RESTful style!');
+							res.end();
+							console.log('Request URL is not in RESTful style!');
+						}
+
+
 
 					    break;
 		/*end POST*/
