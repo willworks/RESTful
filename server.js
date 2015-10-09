@@ -33,6 +33,8 @@ http.createServer(function (req, res) {
 	var method = req.method; //获取请求方法
 	var path = req.url; //获取原始请求路径
 	var pathname = url.parse(path).pathname; // 获取不带参数的路径
+	var paramsGet = ''; // 存储GET请求数据
+	var paramsPost = ''; // 存储POST传递数据
 
 	/* 测试代码
 	
@@ -48,36 +50,49 @@ http.createServer(function (req, res) {
 		xmlhttp.send();
 	*/
 
+	// 判断请求类型，分类处理
+	// http只有这4种请求，其他的钧不合法，故不用default加以处理
+	// 而且传输的时候，需要将JSON，也就是object转为string，用JSON.stringify()
 	switch(method){
-		case 'GET'   : console.log('1'); break;
-		case 'POST'  : console.log('2'); break;
-		case 'PUT'   : console.log('3'); break;
-		case 'DELETE': console.log('4'); break;
-
-		default      : 	res.writeHead(200, {'Content-Type': 'text/plain'}); 
-						res.write('hello world!'); 
+		case 'GET'   :  //获取GET url传递的参数 通过来获取paramsGet.XXX
+					    paramsGet = url.parse(req.url).query; 
+						paramsGet = querystring.parse(paramsGet);
+						console.log(paramsGet);
+					    res.writeHead(200, {'Content-Type': 'text/plain'}); 
+						res.write('GET'); 
+						res.write(JSON.stringify(paramsGet)); 
 						res.end();
-						break;
+					    break;
+
+		case 'POST'  :  //获取POST传递的参数 通过addListener来实现
+				        req.addListener('data', function(chunk){  
+				            paramsPost += chunk;  
+				        })  
+				        .addListener('end', function(){  
+				            paramsPost = querystring.parse(paramsPost);
+				            console.log(paramsPost);
+			                res.writeHead(200, {'Content-Type': 'text/plain'}); 
+			            	res.write('POST'); 
+			            	res.end();
+				        });
+					    break;
+
+		case 'PUT'   :  console.log('PUT is not ready yet!'); 
+						res.writeHead(200, {'Content-Type': 'text/plain'}); 
+						res.write('PUT is not ready yet!'); 
+						res.end();
+					    break;
+
+		case 'DELETE':  console.log('DELETE is not ready yet!'); 
+						res.writeHead(200, {'Content-Type': 'text/plain'}); 
+						res.write('DELETE is not ready yet!'); 
+						res.end();
+					    break;
 	}
 
-	//获取GET url传递的参数 通过来获取paramsGet.XXX
-	var paramsGet = url.parse(req.url).query; 
-		paramsGet = querystring.parse(paramsGet);
-
-	//获取POST传递的参数 通过addListener来实现
-	var paramsPost ='';  
-    req.addListener('data', function(chunk){  
-        paramsPost += chunk;  
-    })  
-    .addListener('end', function(){  
-        paramsPost = querystring.parse(paramsPost);
-        console.log(paramsPost);
-    });
-
-	console.log(method);
-	console.log(path);
-	console.log(pathname);
-	console.log(paramsGet);
+	// console.log(method);
+	// console.log(path);
+	// console.log(pathname);
 
 
 }).listen(8080, '127.0.0.1'); 
