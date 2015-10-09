@@ -32,6 +32,7 @@ http.createServer(function (req, res) {
 	 */
 	var method = req.method; //获取请求方法
 	var path = req.url; //获取原始请求路径
+	var pathname = url.parse(path).pathname; // 获取不带参数的路径
 
 	/* 测试代码，复制到控制台运行
 	
@@ -71,6 +72,7 @@ http.createServer(function (req, res) {
 
 	console.log(method);
 	console.log(path);
+	console.log(pathname);
 	console.log(paramsGet);
 
 	res.writeHead(200, {'Content-Type': 'text/plain'}); 
