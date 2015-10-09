@@ -65,7 +65,7 @@ http.createServer(function (req, res) {
 							// 获取GET url传递的参数 通过来获取paramsGet.XXX
 						    paramsGet = url.parse(req.url).query; 
 							paramsGet = querystring.parse(paramsGet);
-							if(paramsGet.id == undefined){
+							if(paramsGet.id === undefined){
 								// 读取保存的全部用户
 								fs.readFile( __dirname + "/" + "data/users.json", 'utf8', function (err, data) {
 									res.writeHead(200, {'Content-Type': 'text/plain'});
@@ -79,7 +79,7 @@ http.createServer(function (req, res) {
 								fs.readFile( __dirname + "/" + "data/users.json", 'utf8', function (err, data) {
 									var user = JSON.parse(data)[id];
 									user = JSON.stringify(user);
-									if(user == undefined){
+									if(user === undefined){
 										res.writeHead(200, {'Content-Type': 'text/plain'});
 										res.write('user does not exist!');
 										res.end();
