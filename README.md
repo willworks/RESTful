@@ -39,9 +39,9 @@ A RESTful web system build with node
 			// 获取不带参数的路径
 			var pathname = url.parse(path).pathname; 
 
-			//获取GET/PUT/DELETE url传递的参数 通过来获取paramsGet.XXX
-			var paramsGet = url.parse(req.url).query; 
-				paramsGet = querystring.parse(paramsGet);
+			//获取GET/PUT/DELETE url传递的参数 通过来获取params.XXX
+			var params = url.parse(req.url).query; 
+				params = querystring.parse(params);
 
 			//获取POST传递的参数 通过addListener来实现
 			var paramsPost ='';  
