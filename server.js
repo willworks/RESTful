@@ -36,20 +36,6 @@ http.createServer(function (req, res) {
 	var paramsGet = ''; // 存储GET请求数据
 	var paramsPost = ''; // 存储POST传递数据
 
-	/* 测试代码
-	
-	 * POST请求
-	   var xmlhttp = new XMLHttpRequest();
-	   xmlhttp.open('POST','http://localhost:8080',true);
-	   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-	   xmlhttp.send('name=kevin&id=1');
-
-	 * GET请求
-	    var xmlhttp = new XMLHttpRequest();
-		xmlhttp.open('GET','http://localhost:8080'+'?name=kevin&id=1');
-		xmlhttp.send();
-	*/
-
 	// 判断请求类型，分类处理
 	// http只有这4种请求，其他的钧不合法，故不用default加以处理
 	// 而且传输的时候，需要将JSON，也就是object转为string，用JSON.stringify()
@@ -58,8 +44,14 @@ http.createServer(function (req, res) {
 	switch(method){
 		/*start GET*/
 		/**
-		 * http://localhost:8080/listUsers
-		 * http://localhost:8080/listUsers?id=1
+		   // URL类型
+		   http://localhost:8080/listUsers
+		   http://localhost:8080/listUsers?id=1
+
+		   // AJAX GET请求
+		   var xmlhttp = new XMLHttpRequest();
+		   xmlhttp.open('GET','http://localhost:8080'+'?name=kevin&id=1');
+		   xmlhttp.send();
 		 */
 		case 'GET'   :  if(pathname == '/listUsers'){
 							// 获取GET url传递的参数 通过来获取paramsGet.XXX
@@ -92,31 +84,49 @@ http.createServer(function (req, res) {
 									}
 								});
 							}
+						}else{
+							// 处理非法的URL访问
+							res.writeHead(200, {'Content-Type': 'text/plain'});
+							res.write('Request URL is not in RESTful style!');
+							res.end();
+							console.log('Request URL is not in RESTful style!');
 						}
+
 					    break;
 		/*end GET*/
 
 
 		/*start POST*/
 	    /**
-	     * http://localhost:8080/listUsers
-	     * http://localhost:8080/listUsers?id=1
+	       // URL类型
+	       http://localhost:8080/addUser
+	    
+	       // AJAX POST请求
+	       var xmlhttp = new XMLHttpRequest();
+	       var user = 'name=mohit&password=password4&profession=teacher&id=4';
+	       xmlhttp.open('POST','http://localhost:8080/addUser',true);
+	       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+	       xmlhttp.send(user)
 	     */
 		case 'POST'  :  if(pathname == '/addUser'){
 							//获取POST传递的参数 通过addListener来实现
 					        req.addListener('data', function(chunk){  
 					            paramsPost += chunk;  
 					        })  
-					        .addListener('end', function(){  
-					            paramsPost = querystring.parse(paramsPost);
+					        .addListener('end', function(){  	        		            
+				            	fs.readFile( __dirname + "/" + "data/users.json", 'utf8', function (err, data) {
+			            		paramsPost = querystring.parse(paramsPost);
+				            		console.log(paramsPost);
 
+				            		data = JSON.parse(data);
+				            		data['user4'] = paramsPost;
+            			            console.log(data);
 
-					            
-
-					            console.log(paramsPost);
-				                res.writeHead(200, {'Content-Type': 'text/plain'}); 
-				            	res.write('POST'); 
-				            	res.end();
+            		             	res.writeHead(200, {'Content-Type': 'text/plain'}); 
+            		             	data = JSON.stringify(data);
+            		            	res.write(data); 
+            		            	res.end();
+				            	});
 					        });
 						}else{
 							res.writeHead(200, {'Content-Type': 'text/plain'});
@@ -124,8 +134,6 @@ http.createServer(function (req, res) {
 							res.end();
 							console.log('Request URL is not in RESTful style!');
 						}
-
-
 
 					    break;
 		/*end POST*/
