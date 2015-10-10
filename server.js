@@ -165,7 +165,7 @@ http.createServer(function (req, res) {
 
 		   // AJAX DELETE请求
 		   var xmlhttp = new XMLHttpRequest();
-		   xmlhttp.open('GET','http://localhost:8080/deleteUser'+'?id=1');
+		   xmlhttp.open('DELETE','http://localhost:8080/deleteUser'+'?id=1');
 		   xmlhttp.send();
 		 */
 		case 'DELETE':  if(pathname == '/deleteUser'){
