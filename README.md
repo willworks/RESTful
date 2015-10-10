@@ -14,8 +14,13 @@ A RESTful web system build with node
 
 		 * GET请求
 		    var xmlhttp = new XMLHttpRequest();
-		    xmlhttp.open('GET','http://localhost:8080'+'?id=1');
+		    xmlhttp.open('GET','http://localhost:8080/listUsers'+'?id=1');
 		    xmlhttp.send();
+
+	     * DELETE请求
+	        var xmlhttp = new XMLHttpRequest();
+	        xmlhttp.open('DELETE','http://localhost:8080/deleteUser'+'?id=1');
+	        xmlhttp.send();
 		*/
 
 		var http = require('http'),
@@ -84,7 +89,7 @@ A RESTful web system build with node
 			<td>3</td>
 			<td>deleteUser?id=</td>
 			<td>DELETE</td>
-			<td>JSON 字符串</td>
+			<td>空</td>
 			<td>删除用户</td> 
 		</tr>
 

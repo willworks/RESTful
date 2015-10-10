@@ -33,7 +33,11 @@ http.createServer(function (req, res) {
 	var method = req.method; //获取请求方法
 	var path = req.url; //获取原始请求路径
 	var pathname = url.parse(path).pathname; // 获取不带参数的路径
+	// 通过URL穿值
 	var paramsGet = ''; // 存储GET请求数据
+	var paramsPut = ''; // 存储PUT请求数据
+	var paramsDelete = ''; // 存储DELETE请求数据
+	// 通过http body传值
 	var paramsPost = ''; // 存储POST传递数据
 
 	// 判断请求类型，分类处理
@@ -50,7 +54,7 @@ http.createServer(function (req, res) {
 
 		   // AJAX GET请求
 		   var xmlhttp = new XMLHttpRequest();
-		   xmlhttp.open('GET','http://localhost:8080'+'?id=1');
+		   xmlhttp.open('GET','http://localhost:8080/listUsers'+'?id=1');
 		   xmlhttp.send();
 		 */
 		case 'GET'   :  if(pathname == '/listUsers'){
@@ -109,11 +113,11 @@ http.createServer(function (req, res) {
 	       xmlhttp.send(user)
 	     */
 		case 'POST'  :  if(pathname == '/addUser'){
-							//获取POST传递的参数 通过addListener来实现
+							// 获取POST传递的参数 通过addListener来实现
 					        req.addListener('data', function(chunk){  
 					            paramsPost += chunk;  
 					        })  
-					        .addListener('end', function(){  	        		            
+					        .addListener('end', function(){	            
 				            	fs.readFile( __dirname + "/" + "data/users.json", 'utf8', function (err, data) {
 				            		/** 
 				            		 * 处理POST的传值
@@ -147,18 +151,66 @@ http.createServer(function (req, res) {
 						res.writeHead(200, {'Content-Type': 'text/plain'}); 
 						res.write('PUT is not ready yet!'); 
 						res.end();
+
 					    break;
 		/*end PUT*/
 
 
+
 		/*start DELETE*/
-		case 'DELETE':  console.log('DELETE is not ready yet!'); 
-						res.writeHead(200, {'Content-Type': 'text/plain'}); 
-						res.write('DELETE is not ready yet!'); 
-						res.end();
+		/**
+		   // URL类型
+		   http://localhost:8080/deleteUser
+		   http://localhost:8080/deleteUser?id=1
+
+		   // AJAX DELETE请求
+		   var xmlhttp = new XMLHttpRequest();
+		   xmlhttp.open('GET','http://localhost:8080/deleteUser'+'?id=1');
+		   xmlhttp.send();
+		 */
+		case 'DELETE':  if(pathname == '/deleteUser'){
+							// 获取PUT url传递的参数 通过来获取paramsPUT.XXX
+						    paramsPut = url.parse(req.url).query; 
+							paramsPut = querystring.parse(paramsPut);
+							// 删除前，查询具体用户是否存在
+							if(paramsPut.id !== undefined){
+								var id = 'user' + paramsPut.id;
+								fs.readFile( __dirname + "/" + "data/users.json", 'utf8', function (err, data) {
+									var users = JSON.parse(data);
+									var user = users[id];
+									user = JSON.stringify(user);
+									if(user === undefined){
+										res.writeHead(200, {'Content-Type': 'text/plain'});
+										res.write('user does not exist!');
+										res.end();
+										console.log('user does not exist!');
+									}else{
+										res.writeHead(200, {'Content-Type': 'text/plain'});
+										delete users[id];
+										res.write(JSON.stringify(users));
+										res.end();
+										console.log(method + ' ' + user);
+									}
+								});
+							}else{
+								// 处理非法的URL访问
+								res.writeHead(200, {'Content-Type': 'text/plain'});
+								res.write('Request URL is not in RESTful style!');
+								res.end();
+								console.log('Request URL is not in RESTful style!');
+							}
+						}else{
+							// 处理非法的URL访问
+							res.writeHead(200, {'Content-Type': 'text/plain'});
+							res.write('Request URL is not in RESTful style!');
+							res.end();
+							console.log('Request URL is not in RESTful style!');
+						}
+
 					    break;
 		/*end DELETE*/
 	}
+	/*end switch*/
 
 }).listen(8080, '127.0.0.1'); 
 
