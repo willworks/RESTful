@@ -115,13 +115,17 @@ http.createServer(function (req, res) {
 					        })  
 					        .addListener('end', function(){  	        		            
 				            	fs.readFile( __dirname + "/" + "data/users.json", 'utf8', function (err, data) {
-			            		paramsPost = querystring.parse(paramsPost);
-				            		console.log(paramsPost);
-
+				            		/** 
+				            		 * 处理POST的传值
+									 * 测试传值：name=mohit&password=password4&profession=teacher&id=4
+									 */
+			            			paramsPost = querystring.parse(paramsPost);
+			            			// JSON解析
 				            		data = JSON.parse(data);
+				            		// 存储
 				            		data['user4'] = paramsPost;
-            			            console.log(data);
-
+            			            console.log(method + ' store user4' + JSON.stringify(paramsPost) + ' succefully!');
+            			            // 返回
             		             	res.writeHead(200, {'Content-Type': 'text/plain'}); 
             		             	data = JSON.stringify(data);
             		            	res.write(data); 
