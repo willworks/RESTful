@@ -7,14 +7,15 @@ A RESTful web system build with node
 
 		 * POST请求
 		   var xmlhttp = new XMLHttpRequest();
-		   xmlhttp.open('POST','http://localhost:8080',true);
+		   var user = 'name=mohit&password=password4&profession=teacher&id=4';
+		   xmlhttp.open('POST','http://localhost:8080/addUser',true);
 		   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-		   xmlhttp.send('name=kevin&id=1');
+		   xmlhttp.send(user)
 
 		 * GET请求
 		    var xmlhttp = new XMLHttpRequest();
-			xmlhttp.open('GET','http://localhost:8080'+'?name=kevin&id=1');
-			xmlhttp.send();
+		    xmlhttp.open('GET','http://localhost:8080'+'?id=1');
+		    xmlhttp.send();
 		*/
 
 		var http = require('http'),
@@ -33,7 +34,7 @@ A RESTful web system build with node
 			// 获取不带参数的路径
 			var pathname = url.parse(path).pathname; 
 
-			//获取GET url传递的参数 通过来获取paramsGet.XXX
+			//获取GET/PUT/DELETE url传递的参数 通过来获取paramsGet.XXX
 			var paramsGet = url.parse(req.url).query; 
 				paramsGet = querystring.parse(paramsGet);
 
@@ -81,7 +82,7 @@ A RESTful web system build with node
 
 		<tr>
 			<td>3</td>
-			<td>deleteUser</td>
+			<td>deleteUser?id=</td>
 			<td>DELETE</td>
 			<td>JSON 字符串</td>
 			<td>删除用户</td> 

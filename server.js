@@ -37,7 +37,7 @@ http.createServer(function (req, res) {
 	var paramsPost = ''; // 存储POST传递数据
 
 	// 判断请求类型，分类处理
-	// http只有这4种请求，其他的钧不合法，故不用default加以处理
+	// http只有这4种请求，其他的均不合法，故不用default加以处理
 	// 而且传输的时候，需要将JSON，也就是object转为string，用JSON.stringify()
 
 
@@ -50,7 +50,7 @@ http.createServer(function (req, res) {
 
 		   // AJAX GET请求
 		   var xmlhttp = new XMLHttpRequest();
-		   xmlhttp.open('GET','http://localhost:8080'+'?name=kevin&id=1');
+		   xmlhttp.open('GET','http://localhost:8080'+'?id=1');
 		   xmlhttp.send();
 		 */
 		case 'GET'   :  if(pathname == '/listUsers'){
