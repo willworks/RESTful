@@ -17,6 +17,12 @@ A RESTful web system build with node
 		    xmlhttp.open('GET','http://localhost:8080/listUsers'+'?id=1');
 		    xmlhttp.send();
 
+		 * PUT请求
+		 	用于增加数据，但是具体未实现
+		 	var xmlhttp = new XMLHttpRequest();
+		 	xmlhttp.open('PUT','http://localhost:8080/listUsers'+'?id=1');
+		 	xmlhttp.send();
+
 	     * DELETE请求
 	        var xmlhttp = new XMLHttpRequest();
 	        xmlhttp.open('DELETE','http://localhost:8080/deleteUser'+'?id=1');
