@@ -12,7 +12,7 @@ A RESTful web system build with node
 		   var user = 'name=mohit&password=password4&profession=teacher&id=4';
 		   xmlhttp.open('POST','http://localhost:8080/addUser',true);
 		   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-		   xmlhttp.send(user)
+		   xmlhttp.send(user);
 
 		 * GET请求
 		    var xmlhttp = new XMLHttpRequest();
@@ -29,6 +29,7 @@ A RESTful web system build with node
 	        var xmlhttp = new XMLHttpRequest();
 	        xmlhttp.open('DELETE','http://localhost:8080/deleteUser/1');
 	        xmlhttp.send();
+	        
 		*/
 
 		var http = require('http'),
@@ -93,29 +94,44 @@ A RESTful web system build with node
 			<td>显示所有用户列表</td> 
 		</tr>
 
+
 		<tr>
 			<td>2</td>
+			<td>listUser/id</td>
+			<td>GET</td>
+			<td>空</td>
+			<td>显示用户详细信息</td> 
+		</tr>
+
+
+		<tr>
+			<td>3</td>
 			<td>addUser</td>
 			<td>POST</td>
 			<td>JSON 字符串</td>
 			<td>添加新用户</td> 
 		</tr>
 
+
 		<tr>
-			<td>3</td>
-			<td>deleteUser?id=</td>
+			<td>4</td>
+			<td>addUser/id</td>
+			<td>PUT</td>
+			<td>空</td>
+			<td>添加新用户</td> 
+		</tr>
+
+
+		<tr>
+			<td>5</td>
+			<td>deleteUser/id</td>
 			<td>DELETE</td>
 			<td>空</td>
 			<td>删除用户</td> 
 		</tr>
 
-		<tr>
-			<td>4</td>
-			<td>listUsers?id=</td>
-			<td>GET</td>
-			<td>空</td>
-			<td>显示用户详细信息</td> 
-		</tr>
+
+
 	</tbody>
 </table>
 

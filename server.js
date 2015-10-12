@@ -33,13 +33,13 @@ http.createServer(function (req, res) {
 	 * Windows上的例子:'foo\\bar\\baz'.split(path.sep) returns ['foo', 'bar', 'baz']
 	 */
 
-	// 这里用正则表达式来实现切割各个参数
+	// 这里用pathname.split('/')来实现切割各个参数
 	pathname = pathname.split('/');
 
-	/** 处理GET PUT DELETE 通过URL传值
-	 * 获取GET url传递的参数 通过来获取paramsGet.XXX
-	 * paramsGet = url.parse(req.url).query; 
-	 * paramsGet = querystring.parse(paramsGet);
+	/** 处理GET PUT DELETE 通过URL ?传值
+	 * 获取GET url传递的参数 通过来获取params.XXX
+	 * params = url.parse(req.url).query; 
+	 * params = querystring.parse(paramsGet);
 	 */
 	var paramsGet = ''; // 存储GET请求数据
 	var paramsPut = ''; // 存储PUT请求数据
@@ -68,15 +68,15 @@ http.createServer(function (req, res) {
 		/**
 		   // URL类型
 		   http://localhost:8080/listUsers
-		   http://localhost:8080/listUsers/1
+		   http://localhost:8080/listUsers/id
 
 		   // AJAX GET请求
 		   var xmlhttp = new XMLHttpRequest();
-		   xmlhttp.open('GET','http://localhost:8080/listUsers/1');
+		   xmlhttp.open('GET','http://localhost:8080/listUsers/id');
 		   xmlhttp.send();
 		 */
 		case 'GET'   :  if(pathname[1] == 'listUsers'){
-			
+
 							// console.log(pathname[2]);
 							if(pathname[2] === '' || pathname[2] === undefined){
 								// 读取保存的全部用户
@@ -105,13 +105,15 @@ http.createServer(function (req, res) {
 									}
 								});
 							}
-						}else{
-							// 处理非法的URL访问
-							res.writeHead(200, {'Content-Type': 'text/plain'});
-							res.write('Request URL is not in RESTful style!');
-							res.end();
-							console.log('Request URL is not in RESTful style!');
-						}
+						}else if(pathname[1] == 'listUser'){
+
+							  }else{
+							  	// 处理非法的URL访问
+							  	res.writeHead(200, {'Content-Type': 'text/plain'});
+							  	res.write('Request URL is not in RESTful style!');
+							  	res.end();
+							  	console.log('Request URL is not in RESTful style!');
+							  }
 
 					    break;
 		/*end GET*/
