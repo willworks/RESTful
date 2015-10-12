@@ -3,6 +3,8 @@ A RESTful web system build with node
 
 ### node获取url数据
 
+官方API参考[node URL](http://nodeapi.ucdok.com/#/api/url.html)
+
 		/* 测试代码
 
 		 * POST请求
@@ -14,18 +16,18 @@ A RESTful web system build with node
 
 		 * GET请求
 		    var xmlhttp = new XMLHttpRequest();
-		    xmlhttp.open('GET','http://localhost:8080/listUsers'+'?id=1');
+		    // xmlhttp.open('GET','http://localhost:8080/listUsers');
+		    xmlhttp.open('GET','http://localhost:8080/listUser/1');
 		    xmlhttp.send();
 
 		 * PUT请求
-		 	用于增加数据，但是具体未实现
 		 	var xmlhttp = new XMLHttpRequest();
-		 	xmlhttp.open('PUT','http://localhost:8080/listUsers'+'?id=1');
+		 	xmlhttp.open('PUT','http://localhost:8080/addUser/1');
 		 	xmlhttp.send();
 
 	     * DELETE请求
 	        var xmlhttp = new XMLHttpRequest();
-	        xmlhttp.open('DELETE','http://localhost:8080/deleteUser'+'?id=1');
+	        xmlhttp.open('DELETE','http://localhost:8080/deleteUser/1');
 	        xmlhttp.send();
 		*/
 
@@ -44,6 +46,14 @@ A RESTful web system build with node
 
 			// 获取不带参数的路径
 			var pathname = url.parse(path).pathname; 
+
+			// node path模块自带的pathname.split(path.sep)用于切割路径
+			// 但是由于windows和*nix下，具体看http://nodeapi.ucdok.com/#/api/path.html
+			// linux上的例子:'foo/bar/baz'.split(path.sep) returns ['foo', 'bar', 'baz']
+			// Windows上的例子:'foo\\bar\\baz'.split(path.sep) returns ['foo', 'bar', 'baz']
+
+			// 这里用pathname.split('/')来实现切割各个参数
+			pathname = pathname.split('/');
 
 			//获取GET/PUT/DELETE url传递的参数 通过来获取params.XXX
 			var params = url.parse(req.url).query; 
@@ -108,3 +118,4 @@ A RESTful web system build with node
 		</tr>
 	</tbody>
 </table>
+
