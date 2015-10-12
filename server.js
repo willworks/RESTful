@@ -68,16 +68,15 @@ http.createServer(function (req, res) {
 		/**
 		   // URL类型
 		   http://localhost:8080/listUsers
-		   http://localhost:8080/listUsers/id
+		   http://localhost:8080/listUser/id
 
 		   // AJAX GET请求
 		   var xmlhttp = new XMLHttpRequest();
-		   xmlhttp.open('GET','http://localhost:8080/listUsers/id');
+		   // xmlhttp.open('GET','http://localhost:8080/listUsers');
+		   xmlhttp.open('GET','http://localhost:8080/listUser/1');
 		   xmlhttp.send();
 		 */
 		case 'GET'   :  if(pathname[1] == 'listUsers'){
-
-							// console.log(pathname[2]);
 							if(pathname[2] === '' || pathname[2] === undefined){
 								// 读取保存的全部用户
 								fs.readFile( __dirname + "/" + "data/users.json", 'utf8', function (err, data) {
@@ -87,33 +86,48 @@ http.createServer(function (req, res) {
 								    console.log(method + ' all users');
 								});
 							}else{
-								// 查询具体用户
-								var id = 'user' + pathname[2];
-								fs.readFile( __dirname + "/" + "data/users.json", 'utf8', function (err, data) {
-									var user = JSON.parse(data)[id];
-									user = JSON.stringify(user);
-									if(user === undefined){
-										res.writeHead(200, {'Content-Type': 'text/plain'});
-										res.write('user does not exist!');
-										res.end();
-										console.log('user does not exist!');
-									}else{
-										res.writeHead(200, {'Content-Type': 'text/plain'});
-										res.write(user);
-										res.end();
-										console.log(method + ' ' + user);
-									}
-								});
+								// 处理非法的URL访问
+								res.writeHead(200, {'Content-Type': 'text/plain'});
+								res.write('Request URL is not in RESTful style!');
+								res.end();
+								console.log('Request URL is not in RESTful style!');
 							}
-						}else if(pathname[1] == 'listUser'){
+						}else{
+							if(pathname[1] == 'listUser'){
+								if(pathname[2] === '' || pathname[2] === undefined){
+									// 处理非法的URL访问
+									res.writeHead(200, {'Content-Type': 'text/plain'});
+									res.write('Request URL is not in RESTful style!');
+									res.end();
+									console.log('Request URL is not in RESTful style!');
+								}else{
+									// 查询具体用户
+									var id = 'user' + pathname[2];
+									fs.readFile( __dirname + "/" + "data/users.json", 'utf8', function (err, data) {
+										var user = JSON.parse(data)[id];
+										user = JSON.stringify(user);
+										if(user === undefined){
+											res.writeHead(200, {'Content-Type': 'text/plain'});
+											res.write('user does not exist!');
+											res.end();
+											console.log('user does not exist!');
+										}else{
+											res.writeHead(200, {'Content-Type': 'text/plain'});
+											res.write(user);
+											res.end();
+											console.log(method + ' ' + user);
+										}
+									});
+								}
 
-							  }else{
-							  	// 处理非法的URL访问
-							  	res.writeHead(200, {'Content-Type': 'text/plain'});
-							  	res.write('Request URL is not in RESTful style!');
-							  	res.end();
-							  	console.log('Request URL is not in RESTful style!');
-							  }
+							}else{
+								// 处理非法的URL访问
+								res.writeHead(200, {'Content-Type': 'text/plain'});
+								res.write('Request URL is not in RESTful style!');
+								res.end();
+								console.log('Request URL is not in RESTful style!');
+							}
+						}
 
 					    break;
 		/*end GET*/
@@ -131,30 +145,37 @@ http.createServer(function (req, res) {
 	       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 	       xmlhttp.send(user)
 	     */
-		case 'POST'  :  if(pathname == '/addUser'){
-							// 获取POST传递的参数 通过addListener来实现
-					        req.addListener('data', function(chunk){  
-					            paramsPost += chunk;  
-					        })  
-					        .addListener('end', function(){	            
-				            	fs.readFile( __dirname + "/" + "data/users.json", 'utf8', function (err, data) {
-				            		/** 
-				            		 * 处理POST的传值
-									 * 测试传值：name=mohit&password=password4&profession=teacher&id=4
-									 */
-			            			paramsPost = querystring.parse(paramsPost);
-			            			// JSON解析
-				            		data = JSON.parse(data);
-				            		// 存储
-				            		data['user4'] = paramsPost;
-            			            console.log(method + ' store user4' + JSON.stringify(paramsPost) + ' succefully!');
-            			            // 返回
-            		             	res.writeHead(200, {'Content-Type': 'text/plain'}); 
-            		             	data = JSON.stringify(data);
-            		            	res.write(data); 
-            		            	res.end();
-				            	});
-					        });
+		case 'POST'  :  if(pathname[1] == 'addUser'){
+							if(pathname[2] === '' || pathname[2] === undefined){
+								// 获取POST传递的参数 通过addListener来实现
+						        req.addListener('data', function(chunk){  
+						            paramsPost += chunk;  
+						        })  
+						        .addListener('end', function(){	            
+					            	fs.readFile( __dirname + "/" + "data/users.json", 'utf8', function (err, data) {
+					            		/** 
+					            		 * 处理POST的传值
+										 * 测试传值：name=mohit&password=password4&profession=teacher&id=4
+										 */
+				            			paramsPost = querystring.parse(paramsPost);
+				            			// JSON解析
+					            		data = JSON.parse(data);
+					            		// 存储
+					            		data['user4'] = paramsPost;
+	            			            console.log(method + ' store user4' + JSON.stringify(paramsPost) + ' succefully!');
+	            			            // 返回
+	            		             	res.writeHead(200, {'Content-Type': 'text/plain'}); 
+	            		             	data = JSON.stringify(data);
+	            		            	res.write(data); 
+	            		            	res.end();
+					            	});
+						        });
+							}else{
+								res.writeHead(200, {'Content-Type': 'text/plain'});
+								res.write('Request URL is not in RESTful style!');
+								res.end();
+								console.log('Request URL is not in RESTful style!');
+							}
 						}else{
 							res.writeHead(200, {'Content-Type': 'text/plain'});
 							res.write('Request URL is not in RESTful style!');
@@ -184,16 +205,19 @@ http.createServer(function (req, res) {
 
 		   // AJAX DELETE请求
 		   var xmlhttp = new XMLHttpRequest();
-		   xmlhttp.open('DELETE','http://localhost:8080/deleteUser'+'?id=1');
+		   xmlhttp.open('DELETE','http://localhost:8080/deleteUser/1');
 		   xmlhttp.send();
 		 */
-		case 'DELETE':  if(pathname == '/deleteUser'){
-							// 获取PUT url传递的参数 通过来获取paramsPUT.XXX
-						    paramsPut = url.parse(req.url).query; 
-							paramsPut = querystring.parse(paramsPut);
+		case 'DELETE':  if(pathname[1] == 'deleteUser'){
 							// 删除前，查询具体用户是否存在
-							if(paramsPut.id !== undefined){
-								var id = 'user' + paramsPut.id;
+							if(pathname[2] === '' || pathname[2] === undefined){
+								// 处理非法的URL访问
+								res.writeHead(200, {'Content-Type': 'text/plain'});
+								res.write('Request URL is not in RESTful style!');
+								res.end();
+								console.log('Request URL is not in RESTful style!');
+							}else{
+								var id = 'user' + pathname[2];
 								fs.readFile( __dirname + "/" + "data/users.json", 'utf8', function (err, data) {
 									var users = JSON.parse(data);
 									var user = users[id];
@@ -211,12 +235,6 @@ http.createServer(function (req, res) {
 										console.log(method + ' ' + user);
 									}
 								});
-							}else{
-								// 处理非法的URL访问
-								res.writeHead(200, {'Content-Type': 'text/plain'});
-								res.write('Request URL is not in RESTful style!');
-								res.end();
-								console.log('Request URL is not in RESTful style!');
 							}
 						}else{
 							// 处理非法的URL访问
@@ -228,11 +246,11 @@ http.createServer(function (req, res) {
 
 					    break;
 		/*end DELETE*/
-		default     :   // 处理GET POST DELETE PUT 之外的URL访问
+		default     :   // 处理GET POST DELETE PUT 之外的http请求类型，如PATCH
 						res.writeHead(200, {'Content-Type': 'text/plain'});
-						res.write('Request URL is not in RESTful style!');
+						res.write(method + ' Request is not supported yet!');
 						res.end();
-						console.log('Request URL is not in RESTful style!');
+						console.log(method + ' Request is not supported yet!');
 	}
 	/*end switch*/
 
