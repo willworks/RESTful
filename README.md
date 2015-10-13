@@ -22,8 +22,10 @@ A RESTful web system build with node
 
 		 * PUT请求
 		 	var xmlhttp = new XMLHttpRequest();
-		 	xmlhttp.open('PUT','http://localhost:8080/addUser/1');
-		 	xmlhttp.send();
+		 	var user = 'name=mohit&password=password4&profession=teacher&id=4';
+		 	xmlhttp.open('PUT','http://localhost:8080/addUser/4',true);
+		 	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		 	xmlhttp.send(user);
 
 	     * DELETE请求
 	        var xmlhttp = new XMLHttpRequest();
@@ -76,6 +78,7 @@ A RESTful web system build with node
 
 ### RESTful API列表
 
+
 <table style="margin:0 auto"> 
 	<tbody>
 		<tr>
@@ -117,7 +120,7 @@ A RESTful web system build with node
 			<td>4</td>
 			<td>addUser/id</td>
 			<td>PUT</td>
-			<td>空</td>
+			<td>JSON 字符串</td>
 			<td>添加新用户</td> 
 		</tr>
 
@@ -135,3 +138,16 @@ A RESTful web system build with node
 	</tbody>
 </table>
 
+<br />
+
+关于PUT和POST的差别，可以看看《HTTP权威指南》，里边提到的是
+
+ - PUT：“让服务器用请求的主体部分来创建一个由请求的URL命名的新文档，或者是替换指定URL的文档”
+ - POST：“post用于向服务器发送数据，而put用于向服务器上的资源中存储数据，通常POST方法用于HTML中的表单，用户在表单中填好数据之后，点击发送，填好的数据便会发送到服务器，然后由服务器将其送到它要去的地方(例如一个网关程序，然后由这个程序对数据进行处理)”
+
+通过链接来看的话
+
+ - PUT：http://localhost:8080/addUser/1 body:'name=mohit&password=password4&profession=teacher&id=4'
+ - POST：http://localhost:8080/addUser body:'name=mohit&password=password4&profession=teacher&id=4'
+
+大概意思就是，POST全部数据传到服务器处理，而PUT指定了URL上的资源进行操作

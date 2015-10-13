@@ -36,28 +36,28 @@ http.createServer(function (req, res) {
 	// 这里用pathname.split('/')来实现切割各个参数
 	pathname = pathname.split('/');
 
-	/** 处理GET PUT DELETE 通过URL ?传值
+	/** 处理GET DELETE 通过URL ?传值
 	 * 获取GET url传递的参数 通过来获取params.XXX
 	 * params = url.parse(req.url).query; 
 	 * params = querystring.parse(paramsGet);
 	 */
 	var paramsGet = ''; // 存储GET请求数据
-	var paramsPut = ''; // 存储PUT请求数据
 	var paramsDelete = ''; // 存储DELETE请求数据
 
 
-	/** 获取POST传递的参数 通过addListener来实现
+	/** 获取POST PUT传递的参数 通过addListener来实现
      * req.addListener('data', function(chunk){  
-     *     paramsPost += chunk;  
+     *     params += chunk;  
      * })  
      * .addListener('end', function(){	            
      * 	fs.readFile( __dirname + "/" + "data/users.json", 'utf8', function (err, data) {
-	 * 		paramsPost = querystring.parse(paramsPost);
+	 * 		params = querystring.parse(params);
 	 * 		// JSON解析
      * 		data = JSON.parse(data);
      * });
 	 */
 	var paramsPost = ''; // 存储POST传递数据
+	var paramsPut = ''; // 存储PUT请求数据
 
 
 	// 判断请求类型，分类处理
@@ -151,7 +151,7 @@ http.createServer(function (req, res) {
 						        req.addListener('data', function(chunk){  
 						            paramsPost += chunk;  
 						        })  
-						        .addListener('end', function(){	            
+						        .addListener('end', function(){	    
 					            	fs.readFile( __dirname + "/" + "data/users.json", 'utf8', function (err, data) {
 					            		/** 
 					            		 * 处理POST的传值
@@ -187,10 +187,47 @@ http.createServer(function (req, res) {
 		/*end POST*/
 
 		/*start PUT*/
-		case 'PUT'   :  console.log('PUT is not ready yet!'); 
-						res.writeHead(200, {'Content-Type': 'text/plain'}); 
-						res.write('PUT is not ready yet!'); 
-						res.end();
+		case 'PUT'   :  if(pathname[1] == 'addUser'){
+							// 检测是否指定具体资源
+							if(pathname[2] === '' || pathname[2] === undefined){
+								// 处理非法的URL访问
+								res.writeHead(200, {'Content-Type': 'text/plain'});
+								res.write('Request URL is not in RESTful style!');
+								res.end();
+								console.log('Request URL is not in RESTful style!');
+							}else{
+								// 获取PUT传递的参数 通过addListener来实现
+						        req.addListener('data', function(chunk){  
+						            paramsPut += chunk;  
+						        })  
+						        .addListener('end', function(){	    
+					            	fs.readFile( __dirname + "/" + "data/users.json", 'utf8', function (err, data) {
+					            		/** 
+					            		 * 处理PUT的传值
+										 * 测试传值：name=mohit&password=password4&profession=teacher&id=4
+										 */
+				            			paramsPut = querystring.parse(paramsPut);
+				            			// JSON解析
+					            		data = JSON.parse(data);
+					            		// 存储
+					            		var user = 'user' + pathname[2];
+					            		data[user] = paramsPut;
+	            			            console.log(method + ' store ' + user + JSON.stringify(paramsPut) + ' succefully!');
+	            			            // 返回
+	            		             	res.writeHead(200, {'Content-Type': 'text/plain'}); 
+	            		             	data = JSON.stringify(data);
+	            		            	res.write(data); 
+	            		            	res.end();
+					            	});
+						        });
+							}
+						}else{
+							// 处理非法的URL访问
+							res.writeHead(200, {'Content-Type': 'text/plain'});
+							res.write('Request URL is not in RESTful style!');
+							res.end();
+							console.log('Request URL is not in RESTful style!');
+						}
 
 					    break;
 		/*end PUT*/
@@ -246,7 +283,7 @@ http.createServer(function (req, res) {
 
 					    break;
 		/*end DELETE*/
-		default     :   // 处理GET POST DELETE PUT 之外的http请求类型，如PATCH
+		default     :   // 处理GET POST DELETE PUT 之外的http请求类型，如TRACE HEAD等
 						res.writeHead(200, {'Content-Type': 'text/plain'});
 						res.write(method + ' Request is not supported yet!');
 						res.end();
