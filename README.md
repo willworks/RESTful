@@ -150,4 +150,11 @@ A RESTful web system build with node
  - PUT：http://localhost:8080/addUser/1 body:'name=mohit&password=password4&profession=teacher&id=4'
  - POST：http://localhost:8080/addUser body:'name=mohit&password=password4&profession=teacher&id=4'
 
-大概意思就是，POST全部数据传到服务器处理，而PUT指定了URL上的资源进行操作
+在HTTP规范中对POST和PUT是这样定义的：
+  
+ - The POST method isused to request that the origin server accept the entity enclosed in therequest as a new subordinate of the resource identified by the Request-URI inthe Request-Line ...... If a resource has been created on the origin server,the response SHOULD be 201 (Created) and contain an entity which describes thestatus of the request and refers to the new resource, and a Location header.
+  
+ - The PUT methodrequests that the enclosed entity be stored under the supplied Request-URI. Ifthe Request-URI refers to an already existing resource, the enclosed entitySHOULD be considered as a modified version of the one residing on the originserver. If the Request-URI does not point to an existing resource, and that URIis capable of being defined as a new resource by the requesting user agent, theorigin server can create the resource with that URI.
+
+大概意思就是，POST全部数据传到服务器处理，而PUT指定了URL上的资源进行操作，但是实际上，最大的差别不是在语义，而是在幂等和非幂等
+
