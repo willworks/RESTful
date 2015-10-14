@@ -9,32 +9,43 @@
 */
 var http = require('http'),
 	fs = require('fs'),
-	url = require('url'),
-	path = require('path'), // path模块处理路径
 	querystring = require('querystring');
-/**
- * url处理具体参照 http://nodeapi.ucdok.com/#/api/url.html
- */
-http.createServer(function (req, res) { 
+
+// 引入自定义模块
+var parser = require('./parser'),
+	router = require('./controller/router');
+
+http.createServer(function (req, res) {
+	/**
+	 * req.resource 用于存储parser切割好的数据，传递给其他层次使用
+	 * req.resource.method 请求方式
+	 * req.resource.path 请求路径
+	 * req.resource.action 动作
+	 * req.resource.id 操作的具体资源
+	 */
+	req.resource = parser.parser(req);
+
+	if (req.resource.method === 'GET' || req.resource.method === 'POST' || req.resource.method === 'PUT' || req.resource.method === 'DELETE') {
+		// router处理请求，返回结果
+		res.writeHead(200, {'Content-Type': 'text/plain'}); 
+		router.router(req, res, function(result){ 
+		res.end(result); 
+		}); 
+	}else{
+		// 处理GET POST DELETE PUT 之外的http请求类型，如TRACE HEAD等
+		res.writeHead(200, {'Content-Type': 'text/plain'});
+		res.write(req.resource.method + ' Request is not supported yet!');
+		res.end();
+		console.log(req.resource.method + ' Request is not supported yet!');
+	}
+
+
+
 	/** 
 	 * node url模块获取url传参
 	 * url.parse(req.url, true).query 参数保存为JSON格式
 	 * url.parse(req.url).query 参数保存为字符串。需要配合querystring.parse(),参数保存为JSON格式
 	 */
-	var method = req.method; //获取请求方法
-	var path = req.url; //获取原始请求路径，例如/user?id=1&name=kevin 
-	var pathname = url.parse(path).pathname; // 获取不带参数的路径，例如/user
-
-
-	// node path模块自带的pathname.split(path.sep)用于切割路径
-	// 但是由于windows和*nix下，具体看http://nodeapi.ucdok.com/#/api/path.html
-	/** path.sep
-	 * linux上的例子:'foo/bar/baz'.split(path.sep) returns ['foo', 'bar', 'baz']
-	 * Windows上的例子:'foo\\bar\\baz'.split(path.sep) returns ['foo', 'bar', 'baz']
-	 */
-
-	// 这里用pathname.split('/')来实现切割各个参数
-	pathname = pathname.split('/');
 
 	/** 处理GET DELETE 通过URL ?传值
 	 * 获取GET url传递的参数 通过来获取params.XXX
@@ -63,7 +74,7 @@ http.createServer(function (req, res) {
 	// 判断请求类型，分类处理
 	// http只有这4种请求，其他的均不合法，故不用default加以处理
 	// 而且传输的时候，需要将JSON，也就是object转为string，用JSON.stringify()
-	switch(method){
+	switch(req.resource.method){
 		/*start GET*/
 		/**
 		   // URL类型
@@ -76,14 +87,14 @@ http.createServer(function (req, res) {
 		   xmlhttp.open('GET','http://localhost:8080/listUser/1');
 		   xmlhttp.send();
 		 */
-		case 'GET'   :  if(pathname[1] == 'listUsers'){
-							if(pathname[2] === '' || pathname[2] === undefined){
+		case 'GET'   :  if(req.resource.action == 'listUsers'){
+							if(req.resource.id === '' || req.resource.id === undefined){
 								// 读取保存的全部用户
 								fs.readFile( __dirname + "/" + "data/users.json", 'utf8', function (err, data) {
 									res.writeHead(200, {'Content-Type': 'text/plain'});
 								    res.write(data);
 								    res.end();
-								    console.log(method + ' all users');
+								    console.log(req.resource.method + ' all users');
 								});
 							}else{
 								// 处理非法的URL访问
@@ -93,8 +104,8 @@ http.createServer(function (req, res) {
 								console.log('Request URL is not in RESTful style!');
 							}
 						}else{
-							if(pathname[1] == 'listUser'){
-								if(pathname[2] === '' || pathname[2] === undefined){
+							if(req.resource.action == 'listUser'){
+								if(req.resource.id === '' || req.resource.id === undefined){
 									// 处理非法的URL访问
 									res.writeHead(200, {'Content-Type': 'text/plain'});
 									res.write('Request URL is not in RESTful style!');
@@ -102,7 +113,7 @@ http.createServer(function (req, res) {
 									console.log('Request URL is not in RESTful style!');
 								}else{
 									// 查询具体用户
-									var id = 'user' + pathname[2];
+									var id = 'user' + req.resource.id;
 									fs.readFile( __dirname + "/" + "data/users.json", 'utf8', function (err, data) {
 										var user = JSON.parse(data)[id];
 										user = JSON.stringify(user);
@@ -115,7 +126,7 @@ http.createServer(function (req, res) {
 											res.writeHead(200, {'Content-Type': 'text/plain'});
 											res.write(user);
 											res.end();
-											console.log(method + ' ' + user);
+											console.log(req.resource.method + ' ' + user);
 										}
 									});
 								}
@@ -145,8 +156,8 @@ http.createServer(function (req, res) {
 	       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 	       xmlhttp.send(user)
 	     */
-		case 'POST'  :  if(pathname[1] == 'addUser'){
-							if(pathname[2] === '' || pathname[2] === undefined){
+		case 'POST'  :  if(req.resource.action == 'addUser'){
+							if(req.resource.id === '' || req.resource.id === undefined){
 								// 获取POST传递的参数 通过addListener来实现
 						        req.addListener('data', function(chunk){  
 						            paramsPost += chunk;  
@@ -162,7 +173,7 @@ http.createServer(function (req, res) {
 					            		data = JSON.parse(data);
 					            		// 存储
 					            		data['user4'] = paramsPost;
-	            			            console.log(method + ' store user4' + JSON.stringify(paramsPost) + ' succefully!');
+	            			            console.log(req.resource.method + ' store user4' + JSON.stringify(paramsPost) + ' succefully!');
 	            			            // 返回
 	            		             	res.writeHead(200, {'Content-Type': 'text/plain'}); 
 	            		             	data = JSON.stringify(data);
@@ -187,9 +198,9 @@ http.createServer(function (req, res) {
 		/*end POST*/
 
 		/*start PUT*/
-		case 'PUT'   :  if(pathname[1] == 'addUser'){
+		case 'PUT'   :  if(req.resource.action == 'addUser'){
 							// 检测是否指定具体资源
-							if(pathname[2] === '' || pathname[2] === undefined){
+							if(req.resource.id === '' || req.resource.id === undefined){
 								// 处理非法的URL访问
 								res.writeHead(200, {'Content-Type': 'text/plain'});
 								res.write('Request URL is not in RESTful style!');
@@ -210,9 +221,9 @@ http.createServer(function (req, res) {
 				            			// JSON解析
 					            		data = JSON.parse(data);
 					            		// 存储
-					            		var user = 'user' + pathname[2];
+					            		var user = 'user' + req.resource.id;
 					            		data[user] = paramsPut;
-	            			            console.log(method + ' store ' + user + JSON.stringify(paramsPut) + ' succefully!');
+	            			            console.log(req.resource.method + ' store ' + user + JSON.stringify(paramsPut) + ' succefully!');
 	            			            // 返回
 	            		             	res.writeHead(200, {'Content-Type': 'text/plain'}); 
 	            		             	data = JSON.stringify(data);
@@ -245,16 +256,16 @@ http.createServer(function (req, res) {
 		   xmlhttp.open('DELETE','http://localhost:8080/deleteUser/1');
 		   xmlhttp.send();
 		 */
-		case 'DELETE':  if(pathname[1] == 'deleteUser'){
+		case 'DELETE':  if(req.resource.action == 'deleteUser'){
 							// 删除前，查询具体用户是否存在
-							if(pathname[2] === '' || pathname[2] === undefined){
+							if(req.resource.id === '' || req.resource.id === undefined){
 								// 处理非法的URL访问
 								res.writeHead(200, {'Content-Type': 'text/plain'});
 								res.write('Request URL is not in RESTful style!');
 								res.end();
 								console.log('Request URL is not in RESTful style!');
 							}else{
-								var id = 'user' + pathname[2];
+								var id = 'user' + req.resource.id;
 								fs.readFile( __dirname + "/" + "data/users.json", 'utf8', function (err, data) {
 									var users = JSON.parse(data);
 									var user = users[id];
@@ -269,7 +280,7 @@ http.createServer(function (req, res) {
 										delete users[id];
 										res.write(JSON.stringify(users));
 										res.end();
-										console.log(method + ' ' + user);
+										console.log(req.resource.method + ' ' + user);
 									}
 								});
 							}
@@ -285,9 +296,9 @@ http.createServer(function (req, res) {
 		/*end DELETE*/
 		default     :   // 处理GET POST DELETE PUT 之外的http请求类型，如TRACE HEAD等
 						res.writeHead(200, {'Content-Type': 'text/plain'});
-						res.write(method + ' Request is not supported yet!');
+						res.write(req.resource.method + ' Request is not supported yet!');
 						res.end();
-						console.log(method + ' Request is not supported yet!');
+						console.log(req.resource.method + ' Request is not supported yet!');
 	}
 	/*end switch*/
 
