@@ -16,6 +16,7 @@ var http = require('http'),
  * url处理具体参照 http://nodeapi.ucdok.com/#/api/url.html
  */
 http.createServer(function (req, res) { 
+	
 	// 过滤浏览器默认favicon.ico请求
 	if (req.url === '/favicon.ico'){
 		return;
