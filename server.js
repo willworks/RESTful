@@ -18,7 +18,7 @@ var http = require('http'),
 http.createServer(function (req, res) { 
 	// 过滤浏览器默认favicon.ico请求
 	if (req.url === '/favicon.ico'){
-			return;
+		return;
 	}else{
 		/** 
 		 * node url模块获取url传参
